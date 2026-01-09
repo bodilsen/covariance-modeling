@@ -1,0 +1,20 @@
+function [EstOmega2,nNoise] = subNoiseRVEst(Z,useF,All_or_Chg)
+
+	[nobs, w_est, w_N]= deal(length(Z),0,0);
+
+	for i=1:useF
+		sray   = unique([1 i:useF:nobs nobs]);
+        rets   = diff(100*log(Z(sray))); 
+
+		N     = (All_or_Chg?sizerc(rets):sumc(1-(rets.==0)));
+		N     = length(rets);
+
+        %fprintf('%8.6f\n',sum(rets.^2)/(2*N));
+        %fprintf('%8.6f %8.6g \n',sum(rets.^2),N);
+        %fprintf('%8.6g \n',sray);
+
+		w_est = w_est + sum(rets.^2)/(2*N);
+		w_N   = w_N   + N;
+    end
+	[EstOmega2,nNoise] = deal(w_est/useF, w_N/useF);
+end
